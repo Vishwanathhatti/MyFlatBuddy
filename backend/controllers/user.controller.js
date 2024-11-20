@@ -30,7 +30,7 @@ export const register = async (req, res) => {
     const checkPhone= await userModel.findOne({phoneNumber});
     if(checkPhone){
       return res.status(400).json({
-        message: `${phoneNumber} already exist`,
+        message: `${phoneNumber} already registered`,
         success: false,
       });
     }
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
 
     res
       .status(200)
-      .json({ message: "User created successfully", success: true, user });
+      .json({ message: "Account created successfully", success: true, user });
   } catch (error) {
     res
       .status(500)
@@ -102,8 +102,23 @@ export const login = async (req, res) => {
     });
   }
 };
-// linking nodemailer
 
+export const logout = async (req, res)=>{
+  try {
+    return res.status(200).cookie("token", "", {maxAge:0}).json({
+      message:'Logged out successfully',
+      success:true
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message:'Some Error occured',
+      success: false
+    })
+  }
+}
+
+
+// linking nodemailer
 const sendResetPasswordMail = async (firstName, email, resettoken) => {
   try {
     // Configure the transporter
@@ -204,3 +219,5 @@ export const resetPassword = async (req, res) => {
     });
   }
 };
+
+
