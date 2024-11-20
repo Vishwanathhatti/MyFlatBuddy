@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-
+import "dotenv/config"
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/MyFlatBuddy")
+    await mongoose.connect(process.env.MONGO_URI)
     console.log("Connected to MongoDB database successfully")
   } catch (error) {
     console.log("Error connecting MongoDB: ",error)

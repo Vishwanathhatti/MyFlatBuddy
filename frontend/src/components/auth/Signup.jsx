@@ -17,6 +17,7 @@ const Signup = () => {
     dob:'',
     role:'',
     email:'',
+    phone:'',
     password:'',
 
   })
@@ -35,6 +36,7 @@ const Signup = () => {
         dob: input.dob,
         role: input.role,
         email: input.email,
+        phoneNumber: input.phone,
         password: input.password,
       };
     
@@ -108,6 +110,11 @@ const Signup = () => {
           <div className='flex flex-col justify-between gap-3'>
             <Label>Email</Label>
             <Input type='text' value={input.email} onChange={changeEventHandler} name="email" placeholder='example@gmail.com' className='border border-black px-2' />
+          </div>
+
+          <div className='flex flex-col justify-between gap-3'>
+            <Label>Phone Number</Label>
+            <Input type='number' value={input.phone} onChange={changeEventHandler} name="phone" placeholder='000000000' className='border border-black px-2' />
           </div>
 
           <div className='flex flex-col justify-between gap-3'>
