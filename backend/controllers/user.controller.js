@@ -117,6 +117,50 @@ export const logout = async (req, res)=>{
   }
 }
 
+export const updateProfile= async (req, res)=>{
+  try {
+    const {firstName, lastName, dob, role }= req.body;
+    if(!firstName, !lastName, !dob, !role ){
+      return res.status(400).json({
+        message:'Something is missing',
+        success: false
+      })
+    }
+    const userId= req.id;
+    let user= await userModel.findById(userId)
+    if(!user){
+      return res.status(400).json({
+        message:'User not found',
+        success:false
+      })
+    }
+    user.firstName= firstName,
+    user.lastName= lastName,
+    user.dob= dob,
+    user.role= role
+
+    await user.save()
+    user= {
+      _id: user.id,
+      firstname: user.firstName,
+      dob: user.dob,
+      role: user.role
+    }
+
+    return res.status(200).json({
+      message:'Profile Updated successfully',
+      user,
+      success:true
+    })
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      message:error,
+      success:false
+    })
+  }
+}
 
 // linking nodemailer
 const sendResetPasswordMail = async (firstName, email, resettoken) => {

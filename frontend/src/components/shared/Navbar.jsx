@@ -3,10 +3,26 @@ import { Avatar } from '../ui/avatar'
 import { AvatarImage } from '@radix-ui/react-avatar'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
 import { Bookmark, LogOut, Menu } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
+import axios from 'axios'
+import { toast } from 'sonner'
 
 const Navbar = () => {
+    const navigate= useNavigate()
+    const logoutHandler = async()=>{
+        try {
+            const response= await axios.get('http://localhost:3001/api/v1/user/logout')
+            if (response.data.success == true){
+                toast.success(response.data.message)
+                navigate('/login')
+            }            
+        } catch (error) {
+            console.log(error)
+            toast.error(error.response?.data.message)
+        }
+    }
+
     return (
         <div className=' backdrop-blur-sm  w-full border-b-2'>
             <div className='flex items-center justify-between mx-auto px-5 h-16 max-w-7xl'>
@@ -40,7 +56,7 @@ const Navbar = () => {
                                     <Bookmark/>
                                     <h1 className='font-semibold'>Saved Properties</h1>
                                 </div>
-                                <div className='flex gap-2'>
+                                <div className='flex gap-2 cursor-pointer' onClick={logoutHandler}>
                                     <LogOut/>
                                     <h1 className='font-semibold'>Logout</h1>
                                 </div>

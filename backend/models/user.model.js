@@ -29,11 +29,15 @@ const userSchema= new mongoose.Schema({
         type: String,
         required: true,
     },
+    posts:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+    },
     resettoken:{
         type: String,
         default:'',
     }
-})
+},{timestamps:true})
 
 const userModel= mongoose.model("User", userSchema)
 
