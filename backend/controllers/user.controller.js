@@ -5,8 +5,6 @@ import { config } from "../utils/nodemailer.js";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import "dotenv/config";
-// secret key for jwt
-const secretKey = "secretKey";
 
 const hashPassword = async (password) => {
   const saltRounds = 10; // Number of salt rounds
@@ -114,6 +112,46 @@ export const logout = async (req, res)=>{
       message:'Some Error occured',
       success: false
     })
+  }
+}
+export const changePassword= async(req,res)=>{
+  try {
+    const {password, newPassword}= req.body;
+    const userId= req.id;
+    let user= await userModel.findById(userId)
+    if(!user){
+      return res.status(404).json({
+        message:'User not found',
+        success:false
+      })
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if(!isPasswordValid){
+      return res.status(401).json({
+        message:'Incorrect Password',
+        success:false
+      })
+    }
+    
+    const hashedNewPassword= await hashPassword(newPassword)
+
+    await userModel.updateOne(
+      { _id: user._id },
+      { $set: { password: hashedNewPassword } } // Store the hashed password
+    );
+
+    res.status(200).json({
+      message:'Password changed Successfully',
+      success:true
+    })
+
+  }  catch (error) {
+    console.error('Error details:', error);
+    return res.status(500).json({
+      message: 'Internal server error',
+      success: false,
+    });
   }
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { Avatar } from '../ui/avatar'
 import { AvatarImage } from '@radix-ui/react-avatar'
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
-import { Bookmark, LogOut, Menu } from 'lucide-react'
+import { Bookmark, LockIcon, LogOut, Menu, Pen } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
 import axios from 'axios'
@@ -39,7 +39,7 @@ const Navbar = () => {
 
 
                 </ul>
-                {/* <ul className='flex gap-3'>
+                <ul className='flex gap-3'>
                     <li>
                         <Popover>
                             <PopoverTrigger asChild>
@@ -53,12 +53,26 @@ const Navbar = () => {
                                 <hr className='my-4'/>
                                 <div className='flex flex-col justify-center items-start gap-3'>
                                 <div className='flex gap-2'>
+                                <Link to="/" className='flex gap-2 cursor-pointer'>
                                     <Bookmark/>
-                                    <h1 className='font-semibold'>Saved Properties</h1>
+                                    <h1 className='font-semibold cursor-pointer'>Saved Posts</h1>
+                                    </Link>
                                 </div>
+                                <div className='flex gap-2'>
+                                    <Link to="/" className='flex gap-2 cursor-pointer'>
+                                        <Pen/>
+                                        <h1 className='font-semibold cursor-pointer'>Update Profile</h1>
+                                    </Link>
+                                </div>
+                                <div className='flex gap-2'>
+                                    <Link to="/" className='flex gap-2 cursor-pointer'>
+                                        <LockIcon/>
+                                        <h1 className='font-semibold cursor-pointer'>Change Password</h1>
+                                    </Link>
+                                    </div>
                                 <div className='flex gap-2 cursor-pointer' onClick={logoutHandler}>
                                     <LogOut/>
-                                    <h1 className='font-semibold'>Logout</h1>
+                                    <h1 className='font-semibold cursor-pointer'>Logout</h1>
                                 </div>
                                 </div>
                             </PopoverContent>
@@ -69,11 +83,11 @@ const Navbar = () => {
                     <li className='flex items-center'>
                         <Menu size={34} strokeWidth={2.5} />
                     </li>
-                </ul> */}
-                <ul className='flex gap-3'>
+                </ul>
+                {/* <ul className='flex gap-3'>
                     <li><Link to='/login'><Button>Login</Button></Link></li>
                     <li><Link to="/signup"><Button variant="outline">Signup</Button></Link></li>
-                </ul>
+                </ul> */}
             </div>
         </div>
     )
