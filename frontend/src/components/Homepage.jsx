@@ -10,8 +10,10 @@ import WhyChoose from './WhyChoose'
 import Featured from './Featured'
 import PostOrBrowse from './PostOrBrowse'
 import HomeBlog from './HomeBlog'
+import axios from 'axios'
 
 const Homepage = () => {
+
     return (
         <div>
             <Herosection/>

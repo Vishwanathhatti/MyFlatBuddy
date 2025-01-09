@@ -64,3 +64,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+.scrollbar-hidden::-webkit-scrollbar{
+  display: none;
+}
+
+.inner-img{
+  transition: transform 1s ease-in-out;
+}
+
+.outer-img:hover .inner-img {
+  transform: scale(1.1);
+}

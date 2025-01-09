@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from './ui/button'
 import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const PostOrBrowse = () => {
     return (
@@ -10,8 +11,8 @@ const PostOrBrowse = () => {
                 <h2 className='text-white font-semibold text-lg'>MyFlatBuddy provides you an awesome solution!</h2>
             </div>
             <div className='flex gap-5 justify-center items-center mt-2'>
-                <Button className="bg-orange-600 hover:bg-[#ffffff] hover:text-black hover-arrow">Create Post <ArrowUpRight className='arrow-hover-ani' /></Button>
-                <Button className="bg-[#ffffff34] border hover:bg-[#ffffff] hover:text-black hover-arrow">Browse <ArrowUpRight className='arrow-hover-ani' /> </Button>
+                <Link to="/post"><Button className="bg-orange-600 hover:bg-[#ffffff] hover:text-black hover-arrow">Create Post <ArrowUpRight className='arrow-hover-ani' /></Button></Link>
+                <Link to="/listings"><Button className="bg-[#ffffff34] border hover:bg-[#ffffff] hover:text-black hover-arrow">Browse <ArrowUpRight className='arrow-hover-ani' /> </Button></Link>
             </div>
         </div>
     )

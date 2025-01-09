@@ -8,6 +8,15 @@ import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
 import ForgotPassword from './components/auth/ForgotPassword'
 import ResetPassword from './components/auth/ResetPassword'
+import Profile from './components/Profile'
+import Listings from './components/Listings'
+import CreatePost from './components/CreatePost'
+import PostDescription from './components/PostDescription'
+import AppliedPosts from './components/AppliedPosts'
+import Applicants from './components/Applicants'
+import Aboutus from './components/Aboutus'
+import UpdatePost from './components/UpdatePost'
+import ChangePassword from './components/ChangePassword'
 
 function App() {
   const location= useLocation()
@@ -20,6 +29,18 @@ function App() {
         <Route path='/signup' element={<Signup/>} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/reset-password' element={<ResetPassword/>} />
+        <Route path='/profile' element={<Profile/>} />
+        <Route path='/listings' element={<Listings/>} />
+        <Route path='/post' element={<CreatePost/>} />
+        <Route path='/post/:id' element={<PostDescription/>} />
+        <Route path='/applied-post' element={<AppliedPosts/>} />
+        <Route path='/view-applicants/:id' element={<Applicants />} />
+        <Route path='/about' element={<Aboutus />} />
+        <Route path='/update/:id' element={<UpdatePost />} />
+        <Route path='/change-password' element={<ChangePassword />} />
+
+
+
 
       </Routes>
       {location.pathname !== '/login' && location.pathname !== '/signup' && <Footer />}

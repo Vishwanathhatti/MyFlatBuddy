@@ -8,9 +8,14 @@ import { Checkbox } from '../ui/checkbox'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { Loader2 } from 'lucide-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading } from '@/redux/authSlice'
 
 const Signup = () => {
   const navigate= useNavigate()
+  const {loading} = useSelector(store=>store.auth)
+  const dispatch= useDispatch()
   const[input, setInput]= useState({
     firstName:'',
     lastName:'',
@@ -41,6 +46,7 @@ const Signup = () => {
       };
     
       try {
+        dispatch(setLoading(true))
         const response = await axios.post("http://localhost:3001/api/v1/user/signup", formdata);
         if (response.data.success == true) {
           toast.success(response.data.message);
@@ -49,6 +55,8 @@ const Signup = () => {
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data.message || 'An error occurred, please try again.');
+      } finally{
+        dispatch(setLoading(false))
       }
     };
     
@@ -135,7 +143,9 @@ const Signup = () => {
         </p>
       </div>
           </div>
-          <Button type="submit">Signup</Button>
+          {
+            loading ? <Button><Loader2 className='mr-2 h-4 w-4 animate-spin'/> Please wait</Button> : <Button type="submit">Sign up</Button>
+          }
         </form>
       </div>
       

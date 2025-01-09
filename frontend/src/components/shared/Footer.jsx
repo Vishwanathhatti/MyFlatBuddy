@@ -8,7 +8,7 @@ const Footer = () => {
   <div className="container mx-auto px-5 md:px-20">
     <div className="flex flex-wrap text-left lg:text-left">
       <div className="w-full lg:w-6/12 px-4">
-        <h4 className="text-3xl fonat-semibold text-blueGray-700">Let's keep in touch!</h4>
+        <h4 className="text-3xl font-semibold text-orange-500">MyFlatBuddy</h4>
         <h5 className="text-lg mt-0 mb-2 text-blueGray-600">
           Find us on any of these platforms, we respond 1-2 business days.
         </h5>
@@ -72,7 +72,7 @@ const Footer = () => {
       <div className="w-full md:w-4/12 px-4 mx-auto text-center">
         <div className="text-sm text-blueGray-500 font-semibold py-1">
           Copyright © <span id="get-current-year">2024</span><a  className="text-blueGray-500 hover:text-gray-800" target="_blank"> MyFlatBuddy by </a>
-          <a href='https://www.linkedin.com/in/vishwanath-hatti' className="text-blueGray-500 hover:text-cyan-800">Vishwanath Hatti</a>.
+          <a href='https://www.linkedin.com/in/vishwanath-hatti' className="text-blueGray-500 hover:text-cyan-800">Group number 35</a>.
         </div>
       </div>
     </div>

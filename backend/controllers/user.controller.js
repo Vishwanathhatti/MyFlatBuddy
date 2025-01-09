@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import "dotenv/config";
 
+
+
 const hashPassword = async (password) => {
   const saltRounds = 10; // Number of salt rounds
   const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -67,7 +69,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-
+    
     // Compare the plain-text password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -83,12 +85,22 @@ export const login = async (req, res) => {
       userId: user._id,
     };
 
-    const token = await jsonwebtoken.sign(tokenData, process.env.SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    const token = await jsonwebtoken.sign(tokenData, 'qwerty123', {expiresIn: "1d"});
+  //   user = {
+  //     _id: user._id,
+  //     firstName:user.firstName,
+  //     lastName:user.lastName,
+  //     dob:user.dob,
+  //     email:user.email,
+  //     phoneNumber: user.phoneNumber,
+  //     role: user.role,
+  //     profile: user.profile,
+  // }
 
-    return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpOnly:true, sameSite:'strict'}).json({
+    return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpsOnly:true, sameSite:'strict'}).json({
             message: `Welcome back ${user.firstName}`,
+            user,
+            token,
             success: true,
             });
   } catch (error) {
@@ -114,50 +126,45 @@ export const logout = async (req, res)=>{
     })
   }
 }
-export const changePassword= async(req,res)=>{
+
+
+export const changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const userId = req.id; // Assuming the user is authenticated and their ID is available
+
   try {
-    const {password, newPassword}= req.body;
-    const userId= req.id;
-    let user= await userModel.findById(userId)
-    if(!user){
-      return res.status(404).json({
-        message:'User not found',
-        success:false
-      })
+    // Fetch the user from the database
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if(!isPasswordValid){
-      return res.status(401).json({
-        message:'Incorrect Password',
-        success:false
-      })
+    // Compare the entered current password with the stored password hash
+    const match = await bcrypt.compare(currentPassword, user.password);  // Compare directly with plain text password
+    if (!match) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
     }
-    
-    const hashedNewPassword= await hashPassword(newPassword)
 
-    await userModel.updateOne(
-      { _id: user._id },
-      { $set: { password: hashedNewPassword } } // Store the hashed password
-    );
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    res.status(200).json({
-      message:'Password changed Successfully',
-      success:true
-    })
+    // Update the user's password in the database
+    user.password = hashedNewPassword;
+    await user.save();
 
-  }  catch (error) {
-    console.error('Error details:', error);
-    return res.status(500).json({
-      message: 'Internal server error',
-      success: false,
-    });
+    res.status(200).json({ message: 'Password changed successfully', success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong', success: false });
   }
-}
+};
+
 
 export const updateProfile= async (req, res)=>{
   try {
     const {firstName, lastName, dob, role }= req.body;
+    // console.log(req.body)
+    
     if(!firstName, !lastName, !dob, !role ){
       return res.status(400).json({
         message:'Something is missing',
@@ -165,6 +172,7 @@ export const updateProfile= async (req, res)=>{
       })
     }
     const userId= req.id;
+    console.log(userId)
     let user= await userModel.findById(userId)
     if(!user){
       return res.status(400).json({
@@ -181,8 +189,11 @@ export const updateProfile= async (req, res)=>{
     user= {
       _id: user.id,
       firstname: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
       dob: user.dob,
-      role: user.role
+      role: user.role,
+      phoneNumber: user.phoneNumber,
     }
 
     return res.status(200).json({

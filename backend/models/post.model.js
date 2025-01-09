@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
 const postSchema= new mongoose.Schema({
+    images:[{
+        type:String,
+        required:true,
+    }
+    ],
     address:{
         type: String,
         required: true,
@@ -25,6 +30,10 @@ const postSchema= new mongoose.Schema({
         type: String,
         required: true,
     },
+    bhk:{
+        type:String,
+        required:true
+    },
     rent:{
         type: String,
         required: true,
@@ -37,6 +46,11 @@ const postSchema= new mongoose.Schema({
         type: String,
         required:true,
     },
+    isActive:{
+        type:Boolean,
+        default: true
+    }
+    ,
     created_by:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -48,6 +62,6 @@ const postSchema= new mongoose.Schema({
     }]
 },{timestamps:true})
 
-const Post= mongoose.model("Post", postSchema)
+const PostModel= mongoose.model("Post", postSchema)
 
-export default Post;
+export default PostModel;
