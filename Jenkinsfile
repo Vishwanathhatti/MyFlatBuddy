@@ -39,7 +39,8 @@ pipeline {
                     echo '================================================'
                     
                     def sonarToken = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
-                    def sonarUrl = 'http://sonarqube.imcc.com'
+                    def sonarUrl = 'https://sonarqube.imcc.com'
+                    def projectKey = '2401066-myFlatBuddy'
                     
                     try {
                         // Check if sonar-scanner is available
@@ -47,33 +48,39 @@ pipeline {
                         
                         if (scannerCheck == 'not_found') {
                             echo '⚠️  SonarQube Scanner not found on Jenkins server'
-                            echo 'Skipping automated analysis...'
                             echo ''
-                            echo 'To analyze locally, run:'
-                            echo "  sonar-scanner -Dsonar.projectKey=2401066-myFlatBuddy \\"
-                            echo "    -Dsonar.sources=. \\"
-                            echo "    -Dsonar.host.url=${sonarUrl} \\"
-                            echo "    -Dsonar.login=${sonarToken}"
+                            echo '📋 Manual Analysis Instructions:'
+                            echo '=================================='
+                            echo 'Run this command locally to analyze your code:'
+                            echo ''
+                            echo "sonar-scanner \\"
+                            echo "  -Dsonar.projectKey=${projectKey} \\"
+                            echo "  -Dsonar.sources=. \\"
+                            echo "  -Dsonar.host.url=${sonarUrl} \\"
+                            echo "  -Dsonar.token=${sonarToken}"
+                            echo ''
+                            echo "Or visit: ${sonarUrl}/tutorials?id=${projectKey}"
+                            echo '=================================='
                         } else {
                             echo '✅ SonarQube Scanner found, running analysis...'
                             
                             // Run SonarQube analysis
                             sh """
                                 sonar-scanner \
-                                  -Dsonar.projectKey=2401066-myFlatBuddy \
+                                  -Dsonar.projectKey=${projectKey} \
                                   -Dsonar.projectName='FlatBuddy Application' \
                                   -Dsonar.sources=. \
                                   -Dsonar.host.url=${sonarUrl} \
-                                  -Dsonar.login=${sonarToken} \
-                                  -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**
+                                  -Dsonar.token=${sonarToken} \
+                                  -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**,**/.vscode/**
                             """
                             
                             echo '✅ SonarQube analysis completed successfully!'
-                            echo "View results at: ${sonarUrl}/dashboard?id=2401066-myFlatBuddy"
+                            echo "📊 View results at: ${sonarUrl}/dashboard?id=${projectKey}"
                         }
                     } catch (Exception e) {
                         echo "⚠️  SonarQube analysis encountered an error: ${e.message}"
-                        echo 'Continuing pipeline...'
+                        echo 'Pipeline will continue...'
                     }
                     
                     echo '================================================'
