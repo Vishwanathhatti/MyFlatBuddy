@@ -63,7 +63,7 @@ const CreatePost = () => {
 
             setLoading(true);
             const response = await axios.post(
-                'http://localhost:3001/api/v1/user/post',
+                `${import.meta.env.VITE_API_URL}/user/post`,
                 formDataToSubmit,
                 {
                     headers: {

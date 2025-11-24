@@ -36,7 +36,7 @@ const ChangePassword = () => {
 
     const logoutHandler = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/api/v1/user/logout', {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/user/logout`, {
           withCredentials: true,
         });
         if (res.data.success) {
@@ -54,7 +54,7 @@ const ChangePassword = () => {
     try {
       const token = localStorage.getItem('token'); // Ensure you have token to send
       const res = await axios.post(
-        'http://localhost:3001/api/v1/user/profile/change-password',
+        `${import.meta.env.VITE_API_URL}/user/profile/change-password`,
         input,
         {
           headers: {
@@ -63,7 +63,7 @@ const ChangePassword = () => {
           },
         }
       );
-      
+
       if (res.data.success) {
         toast.success(res?.data?.message);
         logoutHandler();

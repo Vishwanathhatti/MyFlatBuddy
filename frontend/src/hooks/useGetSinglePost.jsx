@@ -1,24 +1,26 @@
 // import React from 'react'
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSinglePost} from "@/redux/postSlice"
+import { setSinglePost } from "@/redux/postSlice"
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 
 
 const useGetSinglePost = (id) => {
-    
+
     // console.log(id)
 
-    const dispatch= useDispatch();
+    const dispatch = useDispatch();
     useEffect(() => {
-        const token= localStorage.getItem('token')
+        const token = localStorage.getItem('token')
         const fetchSinglePost = async () => {
             try {
                 // console.log('Fetching posts...');
-                const res = await axios.get(`http://localhost:3001/api/v1/user/getpostbyid/${id}`, { headers:{
-                    "authorization": `bearer ${token}`
-                },withCredentials: true });
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/user/getpostbyid/${id}`, {
+                    headers: {
+                        "authorization": `bearer ${token}`
+                    }, withCredentials: true
+                });
                 // console.log('API Response:', res.data);
                 if (res.data.success) {
                     // console.log('Posts:', res.data.posts);

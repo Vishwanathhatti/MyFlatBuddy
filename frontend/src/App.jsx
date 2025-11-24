@@ -17,27 +17,33 @@ import Applicants from './components/Applicants'
 import Aboutus from './components/Aboutus'
 import UpdatePost from './components/UpdatePost'
 import ChangePassword from './components/ChangePassword'
+import ContactUs from './components/ContactUs'
+import Blogs from './components/Blogs'
+import BlogDescription from './components/BlogDescription'
 
 function App() {
-  const location= useLocation()
+  const location = useLocation()
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <Routes>
         <Route path='/' element={<Homepage />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<Signup/>} />
-        <Route path='/forgot-password' element={<ForgotPassword/>} />
-        <Route path='/reset-password' element={<ResetPassword/>} />
-        <Route path='/profile' element={<Profile/>} />
-        <Route path='/listings' element={<Listings/>} />
-        <Route path='/post' element={<CreatePost/>} />
-        <Route path='/post/:id' element={<PostDescription/>} />
-        <Route path='/applied-post' element={<AppliedPosts/>} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='/listings' element={<Listings />} />
+        <Route path='/post' element={<CreatePost />} />
+        <Route path='/post/:id' element={<PostDescription />} />
+        <Route path='/applied-post' element={<AppliedPosts />} />
         <Route path='/view-applicants/:id' element={<Applicants />} />
         <Route path='/about' element={<Aboutus />} />
         <Route path='/update/:id' element={<UpdatePost />} />
         <Route path='/change-password' element={<ChangePassword />} />
+        <Route path='/contact' element={<ContactUs />} />
+        <Route path='/blog' element={<Blogs />} />
+        <Route path='/blog/:id' element={<BlogDescription />} />
 
 
 

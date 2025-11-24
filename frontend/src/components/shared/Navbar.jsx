@@ -1,7 +1,6 @@
 import React from 'react'
-import { Avatar } from '../ui/avatar'
-import { AvatarImage } from '@radix-ui/react-avatar'
-import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover'
+import { Avatar, AvatarImage } from '../ui/avatar'
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Bookmark, LockIcon, LogOut, Menu, Pen, PlusCircle } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '../ui/button'
@@ -17,20 +16,20 @@ const Navbar = () => {
 
     const logoutHandler = async () => {
         try {
-          const res = await axios.get(`http://localhost:3001/api/v1/user/logout`, {
-            withCredentials: true,
-          });
-          if (res.data.success) {
-            dispatch(setUser(null));
-            localStorage.removeItem('token');
-            navigate("/login");
-            toast.success(res.data.message);
-          }
+            const res = await axios.get(`${import.meta.env.VITE_API_URL}/user/logout`, {
+                withCredentials: true,
+            });
+            if (res.data.success) {
+                dispatch(setUser(null));
+                localStorage.removeItem("token");
+                navigate("/login");
+                toast.success(res.data.message);
+            }
         } catch (error) {
-          console.log(error);
-          toast.error(error.res?.data?.message);
+            console.log(error);
+            toast.error(error.res?.data?.message);
         }
-      };
+    };
 
     return (
         <div className=' backdrop-blur-sm  w-full border-b-2'>
@@ -43,11 +42,11 @@ const Navbar = () => {
                     <li className='text-lg font-medium text-black hover:text-orange-600 hidden md:block'><Link to='/about'>About</Link></li>
                     <li className='text-lg font-medium text-black hover:text-orange-600 hidden md:block'><Link to='/listings'>Listings</Link></li>
                     <li className='text-lg font-medium text-black hover:text-orange-600 hidden md:block'><Link to='/blog'>Blogs</Link></li>
-                    {/* <li className='text-lg font-medium text-black hover:text-orange-600 hidden md:block'><Link to='/contact'>Contact Us</Link></li> */}
+                    <li className='text-lg font-medium text-black hover:text-orange-600 hidden md:block'><Link to='/contact'>Contact Us</Link></li>
                 </ul>
 
                 {
-                    !user ?  
+                    !user ?
                         (
                             <ul className='flex gap-3'>
                                 <li><Link to='/login'><Button>Login</Button></Link></li>
@@ -63,7 +62,7 @@ const Navbar = () => {
                                                 <AvatarImage src='https://i.pinimg.com/564x/c7/ab/cd/c7abcd3ce378191a3dddfa4cdb2be46f.jpg' />
                                             </Avatar>
                                         </PopoverTrigger>
-    
+
                                         <PopoverContent className='p-3 w-48 bg-white rounded-sm border-black border'>
                                             <h1 className='font-bold mt-2'>Hi, {user.firstName}</h1>
                                             <hr className='my-4' />
@@ -86,23 +85,18 @@ const Navbar = () => {
                                                         <h1 className='font-semibold cursor-pointer'>View Profile</h1>
                                                     </Link>
                                                 </div>
-                                                {/* <div className='flex gap-2'>
-                                                    <Link to="/change-password" className='flex gap-2 cursor-pointer'>
-                                                        <LockIcon />
-                                                        <h1 className='font-semibold cursor-pointer'>Change Password</h1>
-                                                    </Link>
-                                                </div> */}
+
                                                 <div className='flex gap-2 cursor-pointer' onClick={logoutHandler}>
                                                     <LogOut />
                                                     <h1 className='font-semibold cursor-pointer'>Logout</h1>
                                                 </div>
                                             </div>
                                         </PopoverContent>
-    
+
                                     </Popover>
-    
+
                                 </li>
-    
+
                             </ul>
                         )
                 }

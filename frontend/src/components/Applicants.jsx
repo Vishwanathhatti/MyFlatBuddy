@@ -8,17 +8,20 @@ import ApplicantsTable from './ApplicantsTable';
 const Applicants = () => {
     const params = useParams();
     const dispatch = useDispatch();
-    const applicants = useSelector((store)=>store.applications.applicants);
+    const applicants = useSelector((store) => store.applications.applicants);
     // console.log(applicants)
     useEffect(() => {
         const fetchAllApplicants = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get(`http://localhost:3001/api/v1/user/${params.id}/applicants`,
-                    { headers: {
-                        "authorization": `Bearer ${token}`},
-                withCredentials: true });
-                
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/user/${params.id}/applicants`,
+                    {
+                        headers: {
+                            "authorization": `Bearer ${token}`
+                        },
+                        withCredentials: true
+                    });
+
                 dispatch(setAllApplicants(res.data.post.applications));
             } catch (error) {
                 console.log(error);
@@ -27,14 +30,14 @@ const Applicants = () => {
         fetchAllApplicants();
     }, []);
 
-  return (
-    <div className='max-w-7xl mx-auto'>
-                <div className='max-w-7xl mx-auto'>
+    return (
+        <div className='max-w-7xl mx-auto'>
+            <div className='max-w-7xl mx-auto'>
                 <h1 className='font-bold text-xl my-5'>Total Applicants: {applicants?.length}</h1>
                 <ApplicantsTable />
-            </div>        
-    </div>
-  )
+            </div>
+        </div>
+    )
 }
 
 export default Applicants

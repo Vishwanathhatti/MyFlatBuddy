@@ -14,7 +14,7 @@ const UpdatePost = () => {
     const params = useParams();
     // console.log(params.id)
     useGetSinglePost(params.id);
-    const user= useSelector((store)=>store.auth)
+    const user = useSelector((store) => store.auth)
     const post = useSelector((store) => store.post.singlePost);
     // console.log(user.user)
     const [loading, setLoading] = useState(false);
@@ -86,15 +86,15 @@ const UpdatePost = () => {
             const token = localStorage.getItem('token');
             setLoading(true);
             await axios.post(
-                `http://localhost:3001/api/v1/user/update/${params.id}`,
+                `${import.meta.env.VITE_API_URL}/user/update/${params.id}`,
                 formDataToSubmit,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         "authorization": `Bearer ${token}`,
-                        "id":user?.user?._id
+                        "id": user?.user?._id
                     },
-                    
+
                 }
             );
             toast.success('Post updated successfully!');
@@ -110,7 +110,7 @@ const UpdatePost = () => {
     return (
         <div className="flex mx-auto justify-center items-center p-5 max-w-7xl">
             <div className="flex flex-col items-center p-5 border border-gray-200 w-full">
-            <h1 className='text-4xl font-semibold text-orange-600'>Update Post</h1>
+                <h1 className='text-4xl font-semibold text-orange-600'>Update Post</h1>
 
                 <form onSubmit={submitHandler} className="w-full justify-around items-center flex flex-wrap gap-4">
                     {/* Address Field */}

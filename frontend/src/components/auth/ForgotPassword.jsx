@@ -16,12 +16,12 @@ const ForgotPassword = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
         // Make an API call to send the reset password email
-        const formData= {
+        const formData = {
             email: email
         }
         try {
-            const response= await axios.post('http://localhost:3001/api/v1/user/forgot-password',formData)
-            if(response.data.message){
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/forgot-password`, formData)
+            if (response.data.message) {
                 toast.success(response.data.message)
             }
         } catch (error) {
