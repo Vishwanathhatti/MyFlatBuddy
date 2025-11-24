@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import React from 'react'
-import Herosection from '../components/HeroSection'
+import Herosection from '../components/Herosection'
 import brokers from "../assets/avoid-brokers.png"
 import list from "../assets/list.png"
 import lightning from "../assets/lightning.png"
@@ -16,11 +16,11 @@ const Homepage = () => {
 
     return (
         <div>
-            <Herosection/>
-            <WhyChoose/>
-            <Featured/>
-            <PostOrBrowse/>
-            <HomeBlog/>
+            <Herosection />
+            <WhyChoose />
+            <Featured />
+            <PostOrBrowse />
+            <HomeBlog />
         </div>
     )
 }
