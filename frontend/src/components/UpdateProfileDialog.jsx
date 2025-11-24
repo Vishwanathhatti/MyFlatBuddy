@@ -32,15 +32,15 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         const formData = new FormData();
         formData.append("firstName", input.firstName);
         formData.append("lastName", input.lastName);
-        
+
         formData.append("phoneNumber", input.phoneNumber);
         formData.append("dob", input.dob);
         formData.append("role", input.role);
 
         try {
-            const token= localStorage.getItem('token')
+            const token = localStorage.getItem('token')
             setLoading(true);
-            const res = await axios.post(`http://localhost:3001/api/v1/user/profile/update`, formData, {
+            const res = await axios.post(`${import.meta.env.VITE_API_URL}/user/profile/update`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'authorization': `Bearer ${token}`,
@@ -54,7 +54,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         } catch (error) {
             console.log(error);
             toast.error(error.response?.data?.message);
-        } finally{
+        } finally {
             setLoading(false);
         }
         setOpen(false);
@@ -104,7 +104,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                                     onChange={changeEventHandler}
                                     className="col-span-3"
                                 />
-                                </div>
+                            </div>
                             <div className='grid grid-cols-4 items-center gap-4'>
                                 <Label htmlFor="dob" className="text-right">DOB</Label>
                                 <Input
@@ -116,7 +116,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                                     className="col-span-3"
                                 />
                             </div>
-                          
+
 
 
                         </div>

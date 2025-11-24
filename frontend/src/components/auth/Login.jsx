@@ -12,8 +12,8 @@ import { Loader2 } from 'lucide-react'
 const Login = () => {
   const navigate = useNavigate()
 
-  const {loading, user} = useSelector(store=>store.auth)
-  const dispatch= useDispatch()
+  const { loading, user } = useSelector(store => store.auth)
+  const dispatch = useDispatch()
   const [input, setInput] = useState({
     email: '',
     password: ''
@@ -27,7 +27,7 @@ const Login = () => {
     }
     try {
       dispatch(setLoading(true))
-      const response = await axios.post('http://localhost:3001/api/v1/user/login', formData)
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, formData)
       if (response.data.success == true) {
         // After successful login, store the token
         localStorage.setItem("token", response.data.token);
@@ -40,7 +40,7 @@ const Login = () => {
       console.log(error)
       toast.error(error.response?.data.message)
     }
-    finally{
+    finally {
       dispatch(setLoading(false))
     }
   }
@@ -49,11 +49,11 @@ const Login = () => {
     setInput({ ...input, [e.target.name]: e.target.value })
   }
 
-  useEffect(()=>{
-    if(user){
-        navigate("/");
+  useEffect(() => {
+    if (user) {
+      navigate("/");
     }
-},[])
+  }, [])
 
   return (
     <div className='flex justify-center items-center min-h-[70vh]'>
@@ -71,12 +71,12 @@ const Login = () => {
             <Input type='password' value={input.password} onChange={changeEventHandler} name="password" placeholder='**********' className='border border-black px-2' />
           </div>
           {
-            loading ? <Button><Loader2 className='mr-2 h-4 w-4 animate-spin'/> Please wait</Button> : <Button type="submit">Login</Button>
+            loading ? <Button><Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait</Button> : <Button type="submit">Login</Button>
           }
           <div className='flex justify-between'>
-          <Link to='/signup' className=''>Not Registered yet?</Link>
-          <Link to='/forgot-password' className='underline text-green-500'>Forgot password</Link>
-        </div>
+            <Link to='/signup' className=''>Not Registered yet?</Link>
+            <Link to='/forgot-password' className='underline text-green-500'>Forgot password</Link>
+          </div>
         </form>
 
       </div>
