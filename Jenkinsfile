@@ -31,27 +31,53 @@ pipeline {
             }
         }
 
-        stage('Code Analysis Info') {
+        stage('SonarQube Analysis') {
             steps {
-                echo '================================================'
-                echo '           Code Quality & Analysis             '
-                echo '================================================'
-                echo 'SonarQube Server: http://sonarqube.imcc.com'
-                echo ''
-                echo 'To run SonarQube analysis locally:'
-                echo '  1. Install sonar-scanner'
-                echo '  2. Run for backend:'
-                echo '     sonar-scanner -Dsonar.projectKey=flatbuddy-backend \\'
-                echo '       -Dsonar.sources=./backend \\'
-                echo '       -Dsonar.host.url=http://sonarqube.imcc.com \\'
-                echo '       -Dsonar.login=YOUR_TOKEN'
-                echo ''
-                echo '  3. Run for frontend:'
-                echo '     sonar-scanner -Dsonar.projectKey=flatbuddy-frontend \\'
-                echo '       -Dsonar.sources=./frontend/src \\'
-                echo '       -Dsonar.host.url=http://sonarqube.imcc.com \\'
-                echo '       -Dsonar.login=YOUR_TOKEN'
-                echo '================================================'
+                script {
+                    echo '================================================'
+                    echo '      Running SonarQube Code Analysis         '
+                    echo '================================================'
+                    
+                    def sonarToken = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
+                    def sonarUrl = 'http://sonarqube.imcc.com'
+                    
+                    try {
+                        // Check if sonar-scanner is available
+                        def scannerCheck = sh(script: 'which sonar-scanner || echo "not_found"', returnStdout: true).trim()
+                        
+                        if (scannerCheck == 'not_found') {
+                            echo '⚠️  SonarQube Scanner not found on Jenkins server'
+                            echo 'Skipping automated analysis...'
+                            echo ''
+                            echo 'To analyze locally, run:'
+                            echo "  sonar-scanner -Dsonar.projectKey=2401066-myFlatBuddy \\"
+                            echo "    -Dsonar.sources=. \\"
+                            echo "    -Dsonar.host.url=${sonarUrl} \\"
+                            echo "    -Dsonar.login=${sonarToken}"
+                        } else {
+                            echo '✅ SonarQube Scanner found, running analysis...'
+                            
+                            // Run SonarQube analysis
+                            sh """
+                                sonar-scanner \
+                                  -Dsonar.projectKey=2401066-myFlatBuddy \
+                                  -Dsonar.projectName='FlatBuddy Application' \
+                                  -Dsonar.sources=. \
+                                  -Dsonar.host.url=${sonarUrl} \
+                                  -Dsonar.login=${sonarToken} \
+                                  -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**
+                            """
+                            
+                            echo '✅ SonarQube analysis completed successfully!'
+                            echo "View results at: ${sonarUrl}/dashboard?id=2401066-myFlatBuddy"
+                        }
+                    } catch (Exception e) {
+                        echo "⚠️  SonarQube analysis encountered an error: ${e.message}"
+                        echo 'Continuing pipeline...'
+                    }
+                    
+                    echo '================================================'
+                }
             }
         }
 
