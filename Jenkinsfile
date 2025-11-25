@@ -35,45 +35,97 @@ pipeline {
             steps {
                 script {
                     echo '================================================'
-                    echo '      Running SonarQube Code Analysis         '
+                    echo '   🔍 Running Automated SonarQube Analysis    '
                     echo '================================================'
                     
                     def sonarToken = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
                     def sonarUrl = 'http://sonarqube.imcc.com'
+                    def projectKey = '2401066-myFlatBuddy'
                     
                     try {
-                        // Check if sonar-scanner is available
-                        def scannerCheck = sh(script: 'which sonar-scanner || echo "not_found"', returnStdout: true).trim()
+                        echo '📦 Running SonarQube scanner via Docker...'
                         
-                        if (scannerCheck == 'not_found') {
-                            echo '⚠️  SonarQube Scanner not found on Jenkins server'
-                            echo 'Skipping automated analysis...'
-                            echo ''
-                            echo 'To analyze locally, run:'
-                            echo "  sonar-scanner -Dsonar.projectKey=2401066-myFlatBuddy \\"
-                            echo "    -Dsonar.sources=. \\"
-                            echo "    -Dsonar.host.url=${sonarUrl} \\"
-                            echo "    -Dsonar.login=${sonarToken}"
-                        } else {
-                            echo '✅ SonarQube Scanner found, running analysis...'
-                            
-                            // Run SonarQube analysis
-                            sh """
-                                sonar-scanner \
-                                  -Dsonar.projectKey=2401066-myFlatBuddy \
-                                  -Dsonar.projectName='FlatBuddy Application' \
-                                  -Dsonar.sources=. \
-                                  -Dsonar.host.url=${sonarUrl} \
-                                  -Dsonar.login=${sonarToken} \
-                                  -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**
-                            """
-                            
-                            echo '✅ SonarQube analysis completed successfully!'
-                            echo "View results at: ${sonarUrl}/dashboard?id=2401066-myFlatBuddy"
-                        }
+                        // Run SonarQube analysis using Docker container
+                        sh """
+                            docker run --rm \
+                              -v \${WORKSPACE}:/usr/src \
+                              sonarsource/sonar-scanner-cli \
+                              -Dsonar.projectKey=${projectKey} \
+                              -Dsonar.projectName='FlatBuddy Application' \
+                              -Dsonar.sources=backend \
+                              -Dsonar.host.url=${sonarUrl} \
+                              -Dsonar.token=${sonarToken} \
+                              -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**,**/.vscode/**,frontend/**
+                        """
+                        
+                        echo '✅ SonarQube analysis completed successfully!'
+                        echo "📊 View results at: ${sonarUrl}/dashboard?id=${projectKey}"
                     } catch (Exception e) {
-                        echo "⚠️  SonarQube analysis encountered an error: ${e.message}"
-                        echo 'Continuing pipeline...'
+                        echo "⚠️  SonarQube analysis failed: ${e.message}"
+                        echo 'Pipeline will continue...'
+                    }
+                    
+                    echo '================================================'
+                }
+            }
+        }
+
+        stage('Upload to Nexus') {
+            steps {
+                script {
+                    echo '================================================'
+                    echo '   📤 Uploading Artifacts to Nexus            '
+                    echo '================================================'
+                    
+                    def nexusUrl = 'https://nexus.imcc.com/repository/2401066'
+                    def nexusUser = 'student'
+                    def nexusPass = 'Imcc@2025'
+                    def timestamp = new Date().format('yyyyMMdd-HHmmss')
+                    
+                    try {
+                        echo '📦 Creating project archive (excluding node_modules)...'
+                        
+                        // Create temporary directory and copy files
+                        sh '''
+                            mkdir -p temp_upload/backend temp_upload/frontend
+                            
+                            # Copy backend files (excluding node_modules)
+                            rsync -av --exclude='node_modules' backend/ temp_upload/backend/ || \
+                            find backend -type f ! -path '*/node_modules/*' -exec cp --parents {} temp_upload/ \\;
+                            
+                            # Copy frontend files (excluding node_modules)
+                            rsync -av --exclude='node_modules' frontend/ temp_upload/frontend/ || \
+                            find frontend -type f ! -path '*/node_modules/*' -exec cp --parents {} temp_upload/ \\;
+                            
+                            # Copy root files
+                            cp docker-compose.yml Jenkinsfile temp_upload/ 2>/dev/null || true
+                            
+                            # Create zip archive
+                            cd temp_upload
+                            zip -r ../flatbuddy-source.zip . -x '*/node_modules/*' -x '*/.git/*'
+                            cd ..
+                        '''
+                        
+                        echo '✅ Archive created successfully'
+                        echo "📤 Uploading to Nexus..."
+                        
+                        // Upload to Nexus
+                        sh """
+                            curl -k -u ${nexusUser}:${nexusPass} \
+                              --upload-file flatbuddy-source.zip \
+                              ${nexusUrl}/flatbuddy-source-${timestamp}.zip
+                        """
+                        
+                        echo '✅ Upload to Nexus completed successfully!'
+                        echo "📦 Artifact: flatbuddy-source-${timestamp}.zip"
+                        echo "🔗 View at: ${nexusUrl}/"
+                        
+                    } catch (Exception e) {
+                        echo "⚠️  Nexus upload failed: ${e.message}"
+                        echo 'Pipeline will continue...'
+                    } finally {
+                        // Cleanup
+                        sh 'rm -rf temp_upload flatbuddy-source.zip 2>/dev/null || true'
                     }
                     
                     echo '================================================'
