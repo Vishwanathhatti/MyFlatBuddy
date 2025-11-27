@@ -141,6 +141,10 @@ spec:
                     echo '   📤 Uploading to Nexus Repository            '
                     echo '================================================'
                     sh """
+                        # Install curl (dind image doesn't have it by default)
+                        apk add --no-cache curl
+                        
+                        # Upload TAR files to Nexus
                         curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-backend.tar ${NEXUS_RAW}/flatbuddy-backend.tar
                         curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-frontend.tar ${NEXUS_RAW}/flatbuddy-frontend.tar
                     """
