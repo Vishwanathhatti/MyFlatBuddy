@@ -101,23 +101,24 @@ spec:
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Pull Docker Images from Docker Hub') {
             steps {
                 container('dind') {
                     echo '================================================'
-                    echo '   🐳 Building Docker Images                  '
+                    echo '   📥 Pulling Pre-built Images from Docker Hub '
                     echo '================================================'
                     sh """
-                        docker build -t ${DOCKER_HUB_REPO}/flatbuddy-backend:latest ./backend
-                        docker build -t ${DOCKER_HUB_REPO}/flatbuddy-frontend:latest ./frontend
+                        docker pull ${DOCKER_HUB_REPO}/flatbuddy-backend:latest
+                        docker pull ${DOCKER_HUB_REPO}/flatbuddy-frontend:latest
                     """
-                    echo '✅ Docker images built successfully!'
+                    echo '✅ Images pulled successfully!'
+                    echo "🔗 Images from: https://hub.docker.com/u/${DOCKER_HUB_REPO}"
                     echo '================================================'
                 }
             }
         }
 
-        stage('Export Docker Images') {
+        stage('Export Docker Images for Nexus') {
             steps {
                 container('dind') {
                     echo '================================================'
@@ -145,27 +146,6 @@ spec:
                 echo '✅ Upload to Nexus completed!'
                 echo "🔗 View at: ${NEXUS_RAW}/"
                 echo '================================================'
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps {
-                container('dind') {
-                    echo '================================================'
-                    echo '   🚀 Pushing Images to Docker Hub            '
-                    echo '================================================'
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh """
-                            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                            docker push ${DOCKER_HUB_REPO}/flatbuddy-backend:latest
-                            docker push ${DOCKER_HUB_REPO}/flatbuddy-frontend:latest
-                            docker logout
-                        """
-                    }
-                    echo '✅ Images pushed to Docker Hub!'
-                    echo "🔗 View at: https://hub.docker.com/u/${DOCKER_HUB_REPO}"
-                    echo '================================================'
-                }
             }
         }
 
