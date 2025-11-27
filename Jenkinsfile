@@ -42,12 +42,11 @@ spec:
 
     environment {
         SONAR_TOKEN = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
-        // Use internal Kubernetes service URL for SonarQube
-        // Format: http://<service-name>.<namespace>.svc.cluster.local:<port>
-        // You may need to ask your instructor for the correct internal URL
         SONAR_URL = 'http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_PROJECT_KEY = '2401066-myFlatBuddy'
-        NEXUS_RAW = 'https://nexus.imcc.com/repository/2401066'
+        
+        // Using external URL like your friend's working setup
+        NEXUS_RAW = 'http://nexus.imcc.com/repository/2401066'
         NEXUS_USER = 'student'
         NEXUS_PASS = 'Imcc@2025'
         DOCKER_HUB_REPO = 'vishwanath30'
@@ -137,20 +136,31 @@ spec:
         stage('Upload to Nexus') {
             steps {
                 container('dind') {
-                    echo '================================================'
-                    echo '   📤 Uploading to Nexus Repository            '
-                    echo '================================================'
-                    sh """
-                        # Install curl (dind image doesn't have it by default)
-                        apk add --no-cache curl
+                    script {
+                        echo '================================================'
+                        echo '   📤 Uploading to Nexus Repository            '
+                        echo '================================================'
                         
-                        # Upload TAR files to Nexus
-                        curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-backend.tar ${NEXUS_RAW}/flatbuddy-backend.tar
-                        curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-frontend.tar ${NEXUS_RAW}/flatbuddy-frontend.tar
-                    """
-                    echo '✅ Upload to Nexus completed!'
-                    echo "🔗 View at: ${NEXUS_RAW}/"
-                    echo '================================================'
+                        try {
+                            sh """
+                                # Install curl (dind image doesn't have it by default)
+                                apk add --no-cache curl
+                                
+                                # Upload TAR files to Nexus
+                                curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-backend.tar ${NEXUS_RAW}/flatbuddy-backend.tar
+                                curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-frontend.tar ${NEXUS_RAW}/flatbuddy-frontend.tar
+                            """
+                            echo '✅ Upload to Nexus completed!'
+                            echo "🔗 View at: ${NEXUS_RAW}/"
+                        } catch (Exception e) {
+                            echo "⚠️  Nexus upload failed: ${e.message}"
+                            echo "Note: Nexus might not be accessible from Kubernetes cluster"
+                            echo "You can upload manually using: .\\upload-to-nexus.bat"
+                            echo "Pipeline will continue..."
+                        }
+                        
+                        echo '================================================'
+                    }
                 }
             }
         }
