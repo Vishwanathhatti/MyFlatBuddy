@@ -136,16 +136,18 @@ spec:
 
         stage('Upload to Nexus') {
             steps {
-                echo '================================================'
-                echo '   📤 Uploading to Nexus Repository            '
-                echo '================================================'
-                sh """
-                    curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-backend.tar ${NEXUS_RAW}/flatbuddy-backend.tar
-                    curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-frontend.tar ${NEXUS_RAW}/flatbuddy-frontend.tar
-                """
-                echo '✅ Upload to Nexus completed!'
-                echo "🔗 View at: ${NEXUS_RAW}/"
-                echo '================================================'
+                container('dind') {
+                    echo '================================================'
+                    echo '   📤 Uploading to Nexus Repository            '
+                    echo '================================================'
+                    sh """
+                        curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-backend.tar ${NEXUS_RAW}/flatbuddy-backend.tar
+                        curl -k -u ${NEXUS_USER}:${NEXUS_PASS} --upload-file flatbuddy-frontend.tar ${NEXUS_RAW}/flatbuddy-frontend.tar
+                    """
+                    echo '✅ Upload to Nexus completed!'
+                    echo "🔗 View at: ${NEXUS_RAW}/"
+                    echo '================================================'
+                }
             }
         }
 
