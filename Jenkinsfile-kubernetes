@@ -57,22 +57,8 @@ spec:
                 echo '   ✅ Checking out code from GitHub           '
                 echo '================================================'
                 checkout scm
-                echo "Repository: ${env.GIT_URL}"
                 echo "Branch: ${env.GIT_BRANCH}"
                 echo "Commit: ${env.GIT_COMMIT}"
-            }
-        }
-
-        stage('Build Info') {
-            steps {
-                echo '================================================'
-                echo '   FlatBuddy Application - CI/CD Pipeline     '
-                echo '================================================'
-                echo "Build Number: #${env.BUILD_NUMBER}"
-                echo "Build ID: ${env.BUILD_ID}"
-                echo "Job Name: ${env.JOB_NAME}"
-                echo "Workspace: ${env.WORKSPACE}"
-                echo '================================================'
             }
         }
 
@@ -88,12 +74,11 @@ spec:
                           -Dsonar.projectName='FlatBuddy Application' \
                           -Dsonar.sources=backend \
                           -Dsonar.host.url=${SONAR_URL} \
-                          -Dsonar.login=${SONAR_TOKEN} \
+                          -Dsonar.token=${SONAR_TOKEN} \
                           -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**,frontend/**
                     """
-                    echo '✅ SonarQube analysis completed!'
+                    echo "✅ SonarQube analysis completed!"
                     echo "📊 View results at: ${SONAR_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
-                    echo '================================================'
                 }
             }
         }
@@ -109,7 +94,6 @@ spec:
                         docker build -t ${DOCKER_HUB_REPO}/flatbuddy-frontend:latest ./frontend
                     """
                     echo '✅ Docker images built successfully!'
-                    echo '================================================'
                 }
             }
         }
@@ -125,7 +109,6 @@ spec:
                         docker save -o flatbuddy-frontend.tar ${DOCKER_HUB_REPO}/flatbuddy-frontend:latest
                     """
                     echo '✅ Images exported successfully!'
-                    echo '================================================'
                 }
             }
         }
@@ -141,7 +124,6 @@ spec:
                 """
                 echo '✅ Upload to Nexus completed!'
                 echo "🔗 View at: ${NEXUS_RAW}/"
-                echo '================================================'
             }
         }
 
@@ -161,7 +143,6 @@ spec:
                     }
                     echo '✅ Images pushed to Docker Hub!'
                     echo "🔗 View at: https://hub.docker.com/u/${DOCKER_HUB_REPO}"
-                    echo '================================================'
                 }
             }
         }
@@ -190,7 +171,6 @@ spec:
                     echo '✅ Application deployed successfully!'
                     echo '🌐 Backend: http://localhost:5000'
                     echo '🌐 Frontend: http://localhost:3000'
-                    echo '================================================'
                 }
             }
         }
@@ -203,17 +183,13 @@ spec:
             echo '   ✅✅✅ PIPELINE COMPLETED SUCCESSFULLY ✅✅✅  '
             echo '================================================'
             echo "Build #${env.BUILD_NUMBER} finished successfully"
-            echo "Duration: ${currentBuild.durationString}"
             echo ''
             echo 'Summary:'
-            echo "  ✓ Code checked out from: ${env.GIT_BRANCH}"
             echo "  ✓ SonarQube analysis: ${SONAR_URL}/dashboard?id=${SONAR_PROJECT_KEY}"
-            echo "  ✓ Docker images built and exported"
             echo "  ✓ Nexus artifacts: ${NEXUS_RAW}/"
             echo "  ✓ Docker Hub: https://hub.docker.com/u/${DOCKER_HUB_REPO}"
             echo "  ✓ Application deployed and running"
             echo '================================================'
-            echo ''
         }
         failure {
             echo ''
@@ -222,11 +198,9 @@ spec:
             echo '================================================'
             echo 'Check the console output above for errors'
             echo '================================================'
-            echo ''
         }
         always {
             echo "Pipeline execution completed at: ${new Date()}"
         }
     }
 }
-
