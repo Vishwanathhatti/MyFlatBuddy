@@ -88,7 +88,7 @@ spec:
                           -Dsonar.projectName='FlatBuddy Application' \
                           -Dsonar.sources=backend \
                           -Dsonar.host.url=${SONAR_URL} \
-                          -Dsonar.token=${SONAR_TOKEN} \
+                          -Dsonar.login=${SONAR_TOKEN} \
                           -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/.git/**,frontend/**
                     """
                     echo '✅ SonarQube analysis completed!'
