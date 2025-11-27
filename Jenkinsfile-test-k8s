@@ -1,0 +1,27 @@
+pipeline {
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: test
+    image: alpine:latest
+    command: ["cat"]
+    tty: true
+"""
+        }
+    }
+
+    stages {
+        stage('Test Kubernetes') {
+            steps {
+                container('test') {
+                    echo '✅ Kubernetes is working!'
+                    sh 'echo "Hello from Kubernetes pod!"'
+                }
+            }
+        }
+    }
+}
