@@ -42,7 +42,10 @@ spec:
 
     environment {
         SONAR_TOKEN = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
-        SONAR_URL = 'http://sonarqube.imcc.com'
+        // Use internal Kubernetes service URL for SonarQube
+        // Format: http://<service-name>.<namespace>.svc.cluster.local:<port>
+        // You may need to ask your instructor for the correct internal URL
+        SONAR_URL = 'http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000'
         SONAR_PROJECT_KEY = '2401066-myFlatBuddy'
         NEXUS_RAW = 'https://nexus.imcc.com/repository/2401066'
         NEXUS_USER = 'student'
