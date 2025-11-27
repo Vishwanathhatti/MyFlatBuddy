@@ -42,7 +42,7 @@ spec:
 
     environment {
         SONAR_TOKEN = 'sqp_c571c31452fca404b94ba9986f46a6207007c679'
-        SONAR_URL = 'http://sonarqube.imcc.com'
+        SONAR_URL = 'http://192.168.20.250:9000'  // Using IP instead of sonarqube.imcc.com
         SONAR_PROJECT_KEY = '2401066-myFlatBuddy'
         NEXUS_RAW = 'https://nexus.imcc.com/repository/2401066'
         NEXUS_USER = 'student'
