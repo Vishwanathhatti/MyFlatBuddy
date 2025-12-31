@@ -173,8 +173,10 @@ spec:
                         # Apply Manifests
                         kubectl apply -f k8s/backend.yaml -n $STUDENT_ID
                         kubectl apply -f k8s/frontend.yaml -n $STUDENT_ID
+                        kubectl apply -f k8s/ingress.yaml -n $STUDENT_ID
 
                         kubectl get all -n $STUDENT_ID
+                        kubectl get ingress -n $STUDENT_ID
                         kubectl get services -n $STUDENT_ID
                     '''
                 }

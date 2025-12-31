@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flatbuddy-ingress
+  namespace: "2401066"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: flatbuddy.imcc.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: flatbuddy-backend
+                port:
+                  number: 35512
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flatbuddy-frontend
+                port:
+                  number: 80
