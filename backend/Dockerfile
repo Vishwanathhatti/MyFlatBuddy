@@ -6,6 +6,6 @@ WORKDIR /app
 # ensuring consistent architecture with the 'node' container used in the pipeline.
 COPY . .
 
-EXPOSE 35512
+EXPOSE 3001
 
 CMD ["node", "index.js"]

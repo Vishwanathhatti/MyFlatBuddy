@@ -15,7 +15,7 @@ spec:
               service:
                 name: flatbuddy-backend
                 port:
-                  number: 35512
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

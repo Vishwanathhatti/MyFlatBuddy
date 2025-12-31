@@ -19,10 +19,10 @@ spec:
         - name: flatbuddy-backend
           image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401066/flatbuddy-backend:latest
           ports:
-            - containerPort: 35512
+            - containerPort: 3001
           env:
             - name: PORT
-              value: "35512"
+              value: "3001"
 ---
 apiVersion: v1
 kind: Service
@@ -34,6 +34,6 @@ spec:
     app: flatbuddy-backend
   ports:
     - protocol: TCP
-      port: 35512
-      targetPort: 35512
+      port: 80
+      targetPort: 3001
   type: ClusterIP
