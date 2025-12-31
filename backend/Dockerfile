@@ -1,9 +1,11 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
-# We are copying the pre-installed node_modules from the Jenkins workspace
-# ensuring consistent architecture with the 'node' container used in the pipeline.
+COPY package*.json ./
+
+RUN npm install
+
 COPY . .
 
 EXPOSE 3001
