@@ -179,9 +179,10 @@ spec:
 
                         # ------------------------------------------------------------------
                         # STEP 1: Create Image Pull Secret using the IP
+                        # We explicitly add http:// to hint Kubelet to use HTTP
                         # ------------------------------------------------------------------
                         kubectl create secret docker-registry nexus-secret \
-                            --docker-server=$REGISTRY_IP \
+                            --docker-server=http://$REGISTRY_IP \
                             --docker-username=admin \
                             --docker-password=Changeme@2025 \
                             -n $STUDENT_ID \
