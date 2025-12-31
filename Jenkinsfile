@@ -163,45 +163,22 @@ spec:
                 container('kubectl') {
                     sh '''
                         # ------------------------------------------------------------------
-                        # FIX: DYNAMICALLY FIND NEXUS IP
-                        # The Node (kubelet) cannot resolve the internal DNS name.
-                        # We must find the Cluster IP and use that for pulling images.
+                        # REVERTED TO DNS STRATEGY
+                        # The IP strategy failed because of HTTPS enforcement.
+                        # We must use the domain name which is likely whitelisted as insecure.
                         # ------------------------------------------------------------------
                         
-                        echo "--- Resolving Nexus IP ---"
-                        # Fetch the Cluster IP of the Nexus service in namespace 'nexus'
-                        NEXUS_IP=$(kubectl get svc nexus-service-for-docker-hosted-registry -n nexus -o jsonpath='{.spec.clusterIP}')
-                        echo "Nexus Cluster IP: $NEXUS_IP"
-                        
-                        # Use the IP for the Docker Registry URL
-                        REGISTRY_IP="$NEXUS_IP:8085"
-                        echo "Using Registry IP for Deployment: $REGISTRY_IP"
-
-                        # ------------------------------------------------------------------
-                        # STEP 1: Create Image Pull Secret using the IP
-                        # We explicitly add http:// to hint Kubelet to use HTTP
-                        # ------------------------------------------------------------------
+                        # Create secret for pulling images from Nexus
                         kubectl create secret docker-registry nexus-secret \
-                            --docker-server=http://$REGISTRY_IP \
+                            --docker-server=$REGISTRY \
                             --docker-username=admin \
                             --docker-password=Changeme@2025 \
                             -n $STUDENT_ID \
                             --dry-run=client -o yaml | kubectl apply -f -
 
-                        # ------------------------------------------------------------------
-                        # STEP 2: Update Manifests to use IP instead of DNS
-                        # (We use sed to replace the DNS string with the IP in the YAMLs)
-                        # ------------------------------------------------------------------
-                        
-                        # Replace DNS with IP in Backend Manifest
-                        sed -i "s|$REGISTRY|$REGISTRY_IP|g" k8s/backend.yaml
-                        
-                        # Replace DNS with IP in Frontend Manifest
-                        sed -i "s|$REGISTRY|$REGISTRY_IP|g" k8s/frontend.yaml
-                        
-                        echo "--- Applying Manifests ---"
-                        cat k8s/backend.yaml | grep image:
-                        cat k8s/frontend.yaml | grep image:
+                        # Apply Manifests
+                        # We assume the YAML files already contain the correct DNS name
+                        # (nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085)
                         
                         kubectl apply -f k8s/backend.yaml -n $STUDENT_ID
                         kubectl apply -f k8s/frontend.yaml -n $STUDENT_ID
