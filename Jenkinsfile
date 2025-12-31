@@ -54,7 +54,7 @@ spec:
         // Project Specific Config
         STUDENT_ID = "2401066"
         APP_NAME = "myFlatBuddy"
-        REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
+        REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/my-repository"
         SONAR_TOKEN = "sqp_80d42557bd9f6ff2ebb31d7eb131812db60de049"
         
         // Construct Image URLs

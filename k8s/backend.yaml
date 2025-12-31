@@ -17,7 +17,7 @@ spec:
         - name: nexus-secret
       containers:
         - name: flatbuddy-backend
-          image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/my-repository2401066/flatbuddy-backend:latest
+          image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/my-repository/2401066/flatbuddy-backend:latest
           ports:
             - containerPort: 3001
           env:
