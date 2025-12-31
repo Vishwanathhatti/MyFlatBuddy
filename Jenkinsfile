@@ -162,15 +162,46 @@ spec:
             steps {
                 container('kubectl') {
                     sh '''
-                        # Create secret for pulling images from Nexus
+                        # ------------------------------------------------------------------
+                        # FIX: DYNAMICALLY FIND NEXUS IP
+                        # The Node (kubelet) cannot resolve the internal DNS name.
+                        # We must find the Cluster IP and use that for pulling images.
+                        # ------------------------------------------------------------------
+                        
+                        echo "--- Resolving Nexus IP ---"
+                        # Fetch the Cluster IP of the Nexus service in namespace 'nexus'
+                        NEXUS_IP=$(kubectl get svc nexus-service-for-docker-hosted-registry -n nexus -o jsonpath='{.spec.clusterIP}')
+                        echo "Nexus Cluster IP: $NEXUS_IP"
+                        
+                        # Use the IP for the Docker Registry URL
+                        REGISTRY_IP="$NEXUS_IP:8085"
+                        echo "Using Registry IP for Deployment: $REGISTRY_IP"
+
+                        # ------------------------------------------------------------------
+                        # STEP 1: Create Image Pull Secret using the IP
+                        # ------------------------------------------------------------------
                         kubectl create secret docker-registry nexus-secret \
-                            --docker-server=$REGISTRY \
+                            --docker-server=$REGISTRY_IP \
                             --docker-username=admin \
                             --docker-password=Changeme@2025 \
                             -n $STUDENT_ID \
                             --dry-run=client -o yaml | kubectl apply -f -
 
-                        # Apply Manifests
+                        # ------------------------------------------------------------------
+                        # STEP 2: Update Manifests to use IP instead of DNS
+                        # (We use sed to replace the DNS string with the IP in the YAMLs)
+                        # ------------------------------------------------------------------
+                        
+                        # Replace DNS with IP in Backend Manifest
+                        sed -i "s|$REGISTRY|$REGISTRY_IP|g" k8s/backend.yaml
+                        
+                        # Replace DNS with IP in Frontend Manifest
+                        sed -i "s|$REGISTRY|$REGISTRY_IP|g" k8s/frontend.yaml
+                        
+                        echo "--- Applying Manifests ---"
+                        cat k8s/backend.yaml | grep image:
+                        cat k8s/frontend.yaml | grep image:
+                        
                         kubectl apply -f k8s/backend.yaml -n $STUDENT_ID
                         kubectl apply -f k8s/frontend.yaml -n $STUDENT_ID
                         kubectl apply -f k8s/ingress.yaml -n $STUDENT_ID
