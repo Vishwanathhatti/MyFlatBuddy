@@ -182,5 +182,26 @@ spec:
                 }
             }
         }
+
+        stage('Debug Information') {
+            steps {
+                container('kubectl') {
+                    sh '''
+                        echo "--- Waiting for pods to stabilize (10s) ---"
+                        sleep 10
+                        
+                        echo "--- Pod Status ---"
+                        kubectl get pods -n $STUDENT_ID
+                        
+                        echo "--- Pod Events (Why is it failing?) ---"
+                        kubectl get events -n $STUDENT_ID --sort-by='.lastTimestamp'
+                        
+                        echo "--- Detailed Pod Description ---"
+                        # Describe all pods to see the Pulll Events
+                        kubectl describe pods -n $STUDENT_ID
+                    '''
+                }
+            }
+        }
     }
 }
