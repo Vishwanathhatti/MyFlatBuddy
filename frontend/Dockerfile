@@ -1,27 +1,35 @@
-# Build stage
-FROM node:18-alpine as build
+# ===============================
+# Stage 1: Build React/Vite App
+# ===============================
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies (SAFE for CI/CD)
+RUN npm install --legacy-peer-deps
 
+# Copy source code
 COPY . .
 
-# Build the application
+# Build frontend
 RUN npm run build
 
-# Production stage
-# We use the artifacts (dist folder) built in the previous stage
-FROM nginx:alpine
+# ===============================
+# Stage 2: Serve with Nginx
+# ===============================
+FROM public.ecr.aws/nginx/nginx:alpine
 
-# Copy built assets from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy custom nginx config if needed
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Expose port
 EXPOSE 80
 
+# Start nginx
 CMD ["nginx", "-g", "daemon off;"]
