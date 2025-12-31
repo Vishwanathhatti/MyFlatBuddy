@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flatbuddy-frontend
-  namespace: flatbuddy-ns
+  namespace: "2401066"
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,7 @@ spec:
         - name: nexus-secret
       containers:
         - name: flatbuddy-frontend
-          image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/flatbuddy-frontend:latest
+          image: nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/2401066/flatbuddy-frontend:latest
           ports:
             - containerPort: 80
 ---
@@ -25,7 +25,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: flatbuddy-frontend
-  namespace: flatbuddy-ns
+  namespace: "2401066"
 spec:
   selector:
     app: flatbuddy-frontend
