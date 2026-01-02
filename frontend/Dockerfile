@@ -1,7 +1,7 @@
 # ===============================
 # Stage 1: Build React/Vite App
 # ===============================
-FROM node:18-alpine AS builder
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
 
