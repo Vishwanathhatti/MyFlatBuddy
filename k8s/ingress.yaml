@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: flatbuddy-ingress-fix
+  name: flatbuddy-ingress
   namespace: "2401066"
 spec:
   ingressClassName: nginx

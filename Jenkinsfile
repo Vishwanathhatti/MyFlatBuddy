@@ -136,7 +136,7 @@ spec:
                             kubectl apply -f k8s/frontend.yaml 
                             
                             echo "Refreshing Ingress (Cleaning old config)..."
-                            kubectl delete ingress flatbuddy-ingress --ignore-not-found=true
+                            kubectl delete ingress flatbuddy-ingress -n 2401066 --ignore-not-found=true
                             kubectl apply -f k8s/ingress.yaml
                             
                         '''
