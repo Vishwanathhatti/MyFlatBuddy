@@ -4,17 +4,11 @@ FROM node:20-bullseye-slim
 # Set working directory
 WORKDIR /app
 
-# Install dependencies for native modules (crypto, bcrypt, etc.)
-RUN apt-get update && \
-    apt-get install -y python3 make g++ && \
-    rm -rf /var/lib/apt/lists/*
-
 # Copy package files (Skip lockfile to force fresh resolution)
 COPY package.json ./
 
 # Install dependencies (SAFE for CI/CD)
-# Added --verbose to debug hangs
-RUN npm install --legacy-peer-deps --omit=dev --verbose
+RUN npm install --legacy-peer-deps --omit=dev
 
 # Copy application source code
 COPY . .

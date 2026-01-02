@@ -2,7 +2,7 @@ import userModel from "../models/user.model.js";
 import randomstring from "randomstring";
 import nodemailer from "nodemailer";
 import { config } from "../utils/nodemailer.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import "dotenv/config";
 
@@ -16,7 +16,7 @@ const hashPassword = async (password) => {
 
 export const register = async (req, res) => {
   try {
-    const { firstName, lastName, dob, role, email,phoneNumber, password } = req.body;
+    const { firstName, lastName, dob, role, email, phoneNumber, password } = req.body;
 
     // Hash the password before storing
     const hashedPassword = await hashPassword(password);
@@ -27,8 +27,8 @@ export const register = async (req, res) => {
         success: false,
       });
     }
-    const checkPhone= await userModel.findOne({phoneNumber});
-    if(checkPhone){
+    const checkPhone = await userModel.findOne({ phoneNumber });
+    if (checkPhone) {
       return res.status(400).json({
         message: `${phoneNumber} already registered`,
         success: false,
@@ -69,7 +69,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    
+
     // Compare the plain-text password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -85,24 +85,24 @@ export const login = async (req, res) => {
       userId: user._id,
     };
 
-    const token = await jsonwebtoken.sign(tokenData, 'qwerty123', {expiresIn: "1d"});
-  //   user = {
-  //     _id: user._id,
-  //     firstName:user.firstName,
-  //     lastName:user.lastName,
-  //     dob:user.dob,
-  //     email:user.email,
-  //     phoneNumber: user.phoneNumber,
-  //     role: user.role,
-  //     profile: user.profile,
-  // }
+    const token = await jsonwebtoken.sign(tokenData, 'qwerty123', { expiresIn: "1d" });
+    //   user = {
+    //     _id: user._id,
+    //     firstName:user.firstName,
+    //     lastName:user.lastName,
+    //     dob:user.dob,
+    //     email:user.email,
+    //     phoneNumber: user.phoneNumber,
+    //     role: user.role,
+    //     profile: user.profile,
+    // }
 
-    return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpsOnly:true, sameSite:'strict'}).json({
-            message: `Welcome back ${user.firstName}`,
-            user,
-            token,
-            success: true,
-            });
+    return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpsOnly: true, sameSite: 'strict' }).json({
+      message: `Welcome back ${user.firstName}`,
+      user,
+      token,
+      success: true,
+    });
   } catch (error) {
     // Catch any server errors
     console.log(error);
@@ -113,15 +113,15 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res)=>{
+export const logout = async (req, res) => {
   try {
-    return res.status(200).cookie("token", "", {maxAge:0}).json({
-      message:'Logged out successfully',
-      success:true
+    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+      message: 'Logged out successfully',
+      success: true
     })
   } catch (error) {
     return res.status(500).json({
-      message:'Some Error occured',
+      message: 'Some Error occured',
       success: false
     })
   }
@@ -160,33 +160,33 @@ export const changePassword = async (req, res) => {
 };
 
 
-export const updateProfile= async (req, res)=>{
+export const updateProfile = async (req, res) => {
   try {
-    const {firstName, lastName, dob, role }= req.body;
+    const { firstName, lastName, dob, role } = req.body;
     // console.log(req.body)
-    
-    if(!firstName, !lastName, !dob, !role ){
+
+    if (!firstName, !lastName, !dob, !role) {
       return res.status(400).json({
-        message:'Something is missing',
+        message: 'Something is missing',
         success: false
       })
     }
-    const userId= req.id;
+    const userId = req.id;
     console.log(userId)
-    let user= await userModel.findById(userId)
-    if(!user){
+    let user = await userModel.findById(userId)
+    if (!user) {
       return res.status(400).json({
-        message:'User not found',
-        success:false
+        message: 'User not found',
+        success: false
       })
     }
-    user.firstName= firstName,
-    user.lastName= lastName,
-    user.dob= dob,
-    user.role= role
+    user.firstName = firstName,
+      user.lastName = lastName,
+      user.dob = dob,
+      user.role = role
 
     await user.save()
-    user= {
+    user = {
       _id: user.id,
       firstname: user.firstName,
       lastName: user.lastName,
@@ -197,16 +197,16 @@ export const updateProfile= async (req, res)=>{
     }
 
     return res.status(200).json({
-      message:'Profile Updated successfully',
+      message: 'Profile Updated successfully',
       user,
-      success:true
+      success: true
     })
-    
+
   } catch (error) {
     console.log(error)
     res.status(500).json({
-      message:error,
-      success:false
+      message: error,
+      success: false
     })
   }
 }

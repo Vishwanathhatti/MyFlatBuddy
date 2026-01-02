@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import adminModel from '../models/adminModel'; // Adjust the path as needed
 import jwt from 'jsonwebtoken';
 
@@ -62,13 +62,13 @@ export const loginAdmin = async (req, res) => {
         }
 
         const token = jwt.sign({ id: admin._id, email: admin.email }, 'qwerty123', {
-            expiresIn: '1d', 
+            expiresIn: '1d',
         });
 
-        return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpsOnly:true, sameSite:'strict'}).json({
+        return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpsOnly: true, sameSite: 'strict' }).json({
             message: "Login successful",
             success: true,
-            token, 
+            token,
         });
     } catch (error) {
         console.error(error);
@@ -83,9 +83,9 @@ export const logoutAdmin = async (req, res) => {
     try {
         res.cookie('token', '', {
             httpOnly: true,
-            secure: false, 
+            secure: false,
             sameSite: 'strict',
-            expires: new Date(0), 
+            expires: new Date(0),
         });
 
         return res.status(200).json({
