@@ -50,21 +50,6 @@ spec:
         }
     }
 
-    environment {
-        // User Specific Config
-        STUDENT_ID = "2401066"
-        REGISTRY = "nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085"
-        // User provided this token previously. Friend uses a credential '2401098_Blockvote'.
-        // We will default to the token variable if credential binding fails or is not preferred,
-        // but strictly following the friend's pattern would use withCredentials.
-        // Since I don't know the credential ID for 2401066, I will use the hardcoded token 
-        // OR prompt user to create one. For now, sticking to the hardcoded token approach 
-        // inside the shell block to be safe, or falling back to a generic credential pattern if exists.
-        // Friend's code: withCredentials([string(credentialsId: '2401098_Blockvote', ...)])
-        // I will use the hardcoded token variable for simplicity as per previous success.
-        SONAR_TOKEN = "sqp_80d42557bd9f6ff2ebb31d7eb131812db60de049" 
-    }
-
     stages {
 
         stage('Build Backend Docker Image') {
@@ -72,10 +57,7 @@ spec:
                 container('dind') {
                     sh '''
                         echo "Building backend Docker image..."
-                        # Wait for dind to start
                         sleep 10
-                        
-                        # Build using the standalone Dockerfile (now includes npm install)
                         docker build -t flatbuddy-backend:latest ./backend
                         docker image ls
                     '''
@@ -100,12 +82,12 @@ spec:
         stage('SonarQube Analysis') {
             steps {
                 container('sonar-scanner') {
-                    // Using the hardcoded token variable directly for this user
+                    // Using direct token since we might not have the credential ID set up
                     sh '''
                         sonar-scanner \
                             -Dsonar.projectKey=2401066-myFlatBuddy \
                             -Dsonar.host.url=http://my-sonarqube-sonarqube.sonarqube.svc.cluster.local:9000 \
-                            -Dsonar.token=$SONAR_TOKEN \
+                            -Dsonar.login=sqp_80d42557bd9f6ff2ebb31d7eb131812db60de049 \
                             -Dsonar.sources=./ \
                             -Dsonar.exclusions=**/node_modules/**,**/dist/**
                     '''
@@ -118,8 +100,8 @@ spec:
                 container('dind') {
                     sh '''
                         docker --version
-                        # Reuse the admin credentials that worked for the friend
-                        docker login $REGISTRY -u admin -p Changeme@2025
+                        sleep 10
+                        docker login nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085 -u admin -p Changeme@2025
                     '''
                 }
             }
@@ -130,13 +112,12 @@ spec:
                 container('dind') {
                     sh '''
                         echo "Tagging images..."
-                        # Format: Registry/Namespace(Repo)/Image:Tag
-                        docker tag flatbuddy-backend:latest $REGISTRY/$STUDENT_ID/flatbuddy-backend:latest
-                        docker tag flatbuddy-frontend:latest $REGISTRY/$STUDENT_ID/flatbuddy-frontend:latest
+                        docker tag flatbuddy-backend:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/vishwanath/flatbuddy-backend:latest
+                        docker tag flatbuddy-frontend:latest nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/vishwanath/flatbuddy-frontend:latest
 
                         echo "Pushing images..."
-                        docker push $REGISTRY/$STUDENT_ID/flatbuddy-backend:latest
-                        docker push $REGISTRY/$STUDENT_ID/flatbuddy-frontend:latest
+                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/vishwanath/flatbuddy-backend:latest
+                        docker push nexus-service-for-docker-hosted-registry.nexus.svc.cluster.local:8085/vishwanath/flatbuddy-frontend:latest
 
                         docker image ls
                     '''
@@ -144,22 +125,22 @@ spec:
             }
         }
 
-        stage('Deploy Application') {
+        stage('Deploy FlatBuddy Application') {
             steps {
                 container('kubectl') {
-                    sh '''
-                        echo "Applying Kubernetes deployment..."
-                        
-                        # Apply Manifests
-                        kubectl apply -f k8s/backend.yaml -n $STUDENT_ID
-                        kubectl apply -f k8s/frontend.yaml -n $STUDENT_ID
-                        
-                        # Clean and Re-apply Ingress (Friend's pattern)
-                        kubectl delete ingress flatbuddy-ingress -n $STUDENT_ID --ignore-not-found=true
-                        kubectl apply -f k8s/ingress.yaml -n $STUDENT_ID
-
-                        kubectl get all -n $STUDENT_ID
-                    '''
+                    script {
+                        // Dir block not strictly needed if paths are correct, but following pattern
+                        sh '''
+                            echo "Applying FlatBuddy Kubernetes deployment..."
+                            kubectl apply -f k8s/backend.yaml 
+                            kubectl apply -f k8s/frontend.yaml 
+                            
+                            echo "Refreshing Ingress (Cleaning old config)..."
+                            kubectl delete ingress flatbuddy-ingress --ignore-not-found=true
+                            kubectl apply -f k8s/ingress.yaml
+                            
+                        '''
+                    }
                 }
             }
         }
